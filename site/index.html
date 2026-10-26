@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111820">
+  <link rel="icon" href="data:,">
+  <meta name="description" content="Caro Arena — bàn cờ caro 3D, xoay và thu phóng trên điện thoại. Chơi cùng bạn bè hoặc thử sức với máy.">
+  <title>Caro Arena — Bàn cờ 3D</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f4f1ea;
+      --muted: #9ba4ae;
+      --gold: #e9bd76;
+      --teal: #8ce0c9;
+      --line: rgba(255,255,255,.09);
+      --panel: rgba(25,32,42,.92);
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: #10161d; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 13% 5%, rgba(59,86,103,.28), transparent 36%),
+        radial-gradient(ellipse at 88% 72%, rgba(104,62,34,.19), transparent 38%),
+        linear-gradient(145deg,#121a22,#0d131a 66%,#171a20);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: -.01em;
+    }
+    button { font: inherit; }
+    .page { width: min(1280px,calc(100% - 48px)); margin: 0 auto; padding: 24px 0 28px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:22px; }
+    .brand { display:flex; align-items:center; gap:11px; }
+    .brand-mark { position:relative; width:40px; height:40px; flex:0 0 auto; border:1px solid rgba(230,190,125,.4); border-radius:13px; background:linear-gradient(145deg,#43362a,#202a30); box-shadow:inset 0 1px rgba(255,255,255,.13),0 8px 22px rgba(0,0,0,.25); overflow:hidden; }
+    .brand-mark i { position:absolute; width:11px; height:11px; border-radius:4px; transform:skewY(-24deg) rotate(30deg); background:linear-gradient(145deg,#f5d69e,#b47742); box-shadow:3px 3px 0 #71472c; }
+    .brand-mark i:nth-child(1) { left:8px; top:8px; }
+    .brand-mark i:nth-child(2) { left:20px; top:15px; opacity:.86; }
+    .brand-mark i:nth-child(3) { left:8px; top:23px; opacity:.68; }
+    .brand-name { font-size:13px; font-weight:780; letter-spacing:.12em; }
+    .brand-sub { margin-top:3px; color:var(--muted); font-size:10px; letter-spacing:.15em; text-transform:uppercase; }
+    .top-badge { display:flex; align-items:center; gap:8px; padding:9px 12px; color:#dcd7cd; background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:999px; font-size:11px; letter-spacing:.06em; white-space:nowrap; }
+    .top-badge::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--teal); box-shadow:0 0 11px rgba(140,224,201,.65); }
+    .intro { display:flex; align-items:end; justify-content:space-between; gap:24px; margin-bottom:19px; }
+    .eyebrow { margin-bottom:7px; color:var(--gold); font-size:10px; font-weight:750; letter-spacing:.19em; text-transform:uppercase; }
+    h1 { margin:0; font-size:clamp(28px,3.2vw,40px); line-height:1.06; letter-spacing:-.045em; font-weight:760; }
+    .intro p { margin:8px 0 0; color:#b6bdc4; font-size:13px; line-height:1.5; }
+    .ready-note { display:flex; align-items:center; gap:8px; padding-bottom:3px; color:#c1c6cb; font-size:11px; white-space:nowrap; }
+    .ready-note span { width:7px; height:7px; border-radius:50%; background:var(--gold); box-shadow:0 0 10px rgba(233,189,118,.5); }
+    .layout { display:grid; grid-template-columns:minmax(0,1fr) 292px; gap:18px; align-items:start; }
+    .board-card,.panel { border:1px solid var(--line); border-radius:19px; background:linear-gradient(155deg,rgba(33,40,50,.96),rgba(20,26,35,.97)); box-shadow:0 18px 50px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.035); }
+    .board-card { min-width:0; overflow:hidden; }
+    .board-head { min-height:60px; padding:10px 14px 10px 17px; display:flex; justify-content:space-between; align-items:center; gap:12px; border-bottom:1px solid rgba(255,255,255,.07); }
+    .board-caption { display:flex; align-items:center; gap:10px; color:#e7e2d8; font-size:12px; font-weight:700; white-space:nowrap; }
+    .caption-icon { width:25px; height:25px; flex:0 0 auto; display:grid; place-items:center; border:1px solid rgba(233,189,118,.3); border-radius:8px; color:var(--gold); font-size:13px; }
+    .board-meta { color:#a8b2bc; font-size:10px; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; }
+    .zoom-controls { display:flex; align-items:center; gap:5px; }
+    .zoom-btn { width:42px; height:42px; display:grid; place-items:center; padding:0; color:#eee8de; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.055); cursor:pointer; font-size:18px; font-weight:650; transition:background .16s,border-color .16s,transform .16s; touch-action:manipulation; }
+    .zoom-btn:hover { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.23); }
+    .zoom-btn:active { transform:scale(.95); }
+    .zoom-value { width:43px; color:#c3c9ce; text-align:center; font-size:10px; font-variant-numeric:tabular-nums; }
+    .stage-wrap { position:relative; width:100%; height:clamp(470px,68vh,700px); min-height:420px; overflow:hidden; background:radial-gradient(ellipse at 50% 47%,rgba(164,114,65,.18),transparent 54%),linear-gradient(160deg,#201d1a,#171b20 78%); }
+    .stage-wrap canvas { display:block; width:100%; height:100%; touch-action:none; outline:none; }
+    .stage-wrap:focus-within { box-shadow:inset 0 0 0 2px rgba(233,189,118,.28); }
+    .stage-loading { position:absolute; inset:0; display:grid; place-items:center; color:#e8c991; font-size:13px; pointer-events:none; }
+    .board-foot { min-height:45px; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; gap:12px; color:#a6adb5; background:rgba(9,13,18,.28); border-top:1px solid rgba(255,255,255,.06); font-size:11px; }
+    .foot-tip { display:flex; align-items:center; gap:8px; }
+    .tip-glyph { width:18px; height:18px; flex:0 0 auto; display:grid; place-items:center; color:var(--gold); border:1px solid rgba(233,189,118,.4); border-radius:50%; font-size:10px; }
+    .side { display:grid; gap:12px; }
+    .panel { padding:15px; }
+    .panel-title { margin:0 0 12px; color:#a3acb6; font-size:10px; font-weight:750; letter-spacing:.15em; text-transform:uppercase; }
+    .turn-card { display:flex; align-items:center; gap:11px; padding:12px; border:1px solid rgba(233,189,118,.2); border-radius:12px; background:linear-gradient(120deg,rgba(233,189,118,.09),rgba(255,255,255,.025)); }
+    .turn-stone { width:33px; height:27px; flex:0 0 auto; border-radius:50%; background:radial-gradient(ellipse at 34% 26%,#69727c,#242b35 52%,#090d13); box-shadow:0 4px 0 #080b0e,0 7px 10px rgba(0,0,0,.36),inset 0 1px 2px rgba(255,255,255,.24); }
+    .turn-stone.white { background:radial-gradient(ellipse at 34% 25%,#fffaf0,#d2c8b5 57%,#827967); box-shadow:0 4px 0 #5b564c,0 7px 10px rgba(0,0,0,.32),inset 0 1px 2px #fff; }
+    .turn-label { margin-bottom:3px; color:#a2aab3; font-size:10px; }
+    .turn-name { color:#f4f0e8; font-size:14px; font-weight:720; }
+    .turn-sub { margin-top:3px; color:#a2aab3; font-size:10px; }
+    .players { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+    .player { padding:10px; border:1px solid rgba(255,255,255,.08); border-radius:11px; background:rgba(255,255,255,.025); transition:.18s ease; }
+    .player.active { border-color:rgba(233,189,118,.48); background:rgba(233,189,118,.08); }
+    .player-top { display:flex; align-items:center; gap:7px; color:#c3c3c0; font-size:10px; }
+    .mini-stone { width:12px; height:10px; display:inline-block; border-radius:50%; background:linear-gradient(135deg,#606a76,#080b10); box-shadow:0 2px 0 #050609; }
+    .mini-stone.white { background:linear-gradient(135deg,#fff9eb,#b7ad9b); box-shadow:0 2px 0 #6c6659; }
+    .player-name { margin-top:8px; color:#f0ece5; font-size:12px; font-weight:680; }
+    .player-score { margin-top:3px; color:#a4abb3; font-size:10px; }
+    .mode-select { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; padding:4px; border:1px solid rgba(255,255,255,.07); border-radius:11px; background:rgba(0,0,0,.24); }
+    .mode-btn { min-height:38px; padding:8px 6px; color:#b2bac2; border:0; border-radius:8px; background:transparent; cursor:pointer; font-size:11px; font-weight:680; }
+    .mode-btn.active { color:#fff2dc; background:linear-gradient(145deg,#65533b,#473a2b); box-shadow:inset 0 1px rgba(255,255,255,.15),0 2px 5px rgba(0,0,0,.19); }
+    .first-choice { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:9px; }
+    .first-choice[hidden],.action-btn[hidden],.engine-retry[hidden] { display:none; }
+    .choice-btn { min-height:36px; padding:7px 6px; color:#c5c0b6; border:1px solid rgba(255,255,255,.1); border-radius:9px; background:rgba(255,255,255,.035); cursor:pointer; font-size:10px; font-weight:650; }
+    .choice-btn[aria-pressed="true"] { color:#fff2dc; border-color:rgba(233,189,118,.45); background:rgba(233,189,118,.11); }
+    .actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:9px; }
+    .action-btn { min-height:40px; padding:9px 8px; color:#e1ded7; border:1px solid rgba(255,255,255,.11); border-radius:10px; background:rgba(255,255,255,.05); cursor:pointer; font-size:11px; font-weight:650; transition:.16s; touch-action:manipulation; }
+    .action-btn:hover:not(:disabled) { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2); transform:translateY(-1px); }
+    .action-btn:disabled { opacity:.48; cursor:default; }
+    .action-btn.primary { grid-column:1/-1; color:#24190c; border-color:#d6aa66; background:linear-gradient(135deg,#f0cf93,#c9924d); box-shadow:inset 0 1px rgba(255,255,255,.4),0 4px 13px rgba(180,123,58,.14); }
+    .action-btn.primary:hover:not(:disabled) { background:linear-gradient(135deg,#f7dba8,#d9a35e); }
+    .icon { margin-right:5px; font-size:13px; vertical-align:-1px; }
+    .history-list { display:grid; }
+    .history-item { display:flex; align-items:center; justify-content:space-between; padding:8px 1px; color:#d1d0cc; border-bottom:1px solid rgba(255,255,255,.055); font-size:11px; }
+    .history-item:last-child { padding-bottom:0; border:0; }
+    .history-left { display:flex; align-items:center; gap:8px; }
+    .history-number { width:18px; color:#8f98a3; font-variant-numeric:tabular-nums; }
+    .history-color { width:9px; height:9px; border:1px solid #737d89; border-radius:50%; background:#343c47; }
+    .history-color.white { border-color:#fff7e6; background:#e6dfd0; }
+    .history-empty { padding:7px 0 1px; color:#929ba5; font-size:11px; }
+    .engine-card { padding:11px 12px; border:1px solid rgba(140,224,201,.14); border-radius:11px; background:linear-gradient(125deg,rgba(140,224,201,.055),rgba(255,255,255,.018)); }
+    .engine-status { color:#d9e7e0; font-size:11px; font-weight:700; }
+    .engine-detail { margin-top:4px; color:#929da5; font-size:10px; line-height:1.45; }
+    .engine-retry { margin-top:8px; padding:6px 9px; color:#d9e7e0; border:1px solid rgba(140,224,201,.22); border-radius:8px; background:rgba(140,224,201,.06); cursor:pointer; font-size:10px; }
+    .engine-status[data-state="error"] { color:#efac95; }
+    .timeout-control { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:12px; color:#c5cec9; font-size:10px; }
+    .timeout-control input { width:88px; min-height:38px; padding:7px 8px; color:#fff1d9; background:#182029; border:1px solid rgba(233,189,118,.25); border-radius:8px; font:600 12px ui-sans-serif,system-ui,sans-serif; }
+    .timeout-control input:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+    .timeout-hint { margin:5px 0 0; color:#87958f; font-size:9px; line-height:1.5; }
+    #pause-btn { grid-column:1/-1; }
+    .rule { display:flex; align-items:flex-start; gap:10px; color:#b0b7bf; font-size:11px; line-height:1.55; }
+    .rule strong { color:#ead5b3; font-weight:700; }
+    .rule-mark { width:22px; height:22px; flex:0 0 22px; display:grid; place-items:center; color:var(--gold); border-radius:7px; background:rgba(233,189,118,.1); }
+    .footer { padding:16px 0 0; color:#828b95; font-size:10px; text-align:center; }
+    button:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+    @media (max-width:960px) {
+      .layout { grid-template-columns:minmax(0,1fr) 270px; gap:13px; }
+      .page { width:min(100% - 30px,1280px); }
+      .panel { padding:13px; }
+      .stage-wrap { height:clamp(450px,65vh,640px); }
+    }
+    @media (max-width:740px) {
+      .page { width:min(100% - 20px,600px); padding-top:14px; }
+      .topbar { margin-bottom:18px; }
+      .intro { align-items:flex-start; margin-bottom:14px; }
+      .intro p { max-width:430px; font-size:12px; }
+      .ready-note { display:none; }
+      .layout { grid-template-columns:1fr; gap:11px; }
+      .stage-wrap { height:min(61svh,590px); min-height:430px; }
+      .side { grid-template-columns:1fr; gap:9px; }
+      .panel:first-child,.panel:last-child { grid-column:1/-1; }
+      .footer { padding-top:13px; }
+    }
+    @media (max-width:440px) {
+      .page { width:calc(100% - 12px); padding-top:10px; }
+      .topbar { margin-bottom:15px; }
+      .brand-mark { width:36px; height:36px; }
+      .brand-name { font-size:11px; }
+      .brand-sub { font-size:9px; }
+      .top-badge { padding:8px 9px; font-size:9px; }
+      h1 { font-size:29px; }
+      .intro p { max-width:310px; font-size:11px; }
+      .board-head { min-height:58px; padding:8px 8px 8px 10px; gap:6px; }
+      .board-caption { gap:6px; font-size:10px; }
+      .caption-icon { width:23px; height:23px; }
+      .board-meta { display:none; }
+      .zoom-controls { gap:3px; }
+      .zoom-btn { width:42px; height:42px; border-radius:9px; }
+      .zoom-value { width:38px; font-size:9px; }
+      .stage-wrap { height:min(59svh,540px); min-height:410px; }
+      .board-foot { min-height:43px; padding:9px 10px; gap:5px; font-size:9px; }
+      .foot-tip { gap:6px; }
+      .tip-glyph { width:16px; height:16px; }
+      .side { gap:7px; }
+      .panel { padding:10px; }
+      .panel-title { margin-bottom:10px; font-size:9px; }
+      .turn-card { padding:10px; }
+      .player { padding:8px; }
+      .player-name { font-size:11px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand" aria-label="Caro Arena">
+        <div class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div><div class="brand-name">CARO ARENA</div><div class="brand-sub">Bàn chơi 3D</div></div>
+      </div>
+      <div class="top-badge">Bàn gỗ · 15 × 15</div>
+    </header>
+
+    <section class="intro">
+      <div>
+        <div class="eyebrow">Trận đấu · 01</div>
+        <h1>Caro Arena</h1>
+        <p>Bàn cờ 3D thật — chọn giao điểm A–O / 1–15, đấu cùng bạn bè hoặc thử sức với Rapfi AI.</p>
+      </div>
+      <div class="ready-note"><span></span> Sẵn sàng vào trận</div>
+    </section>
+
+    <section class="layout" aria-label="Bàn chơi caro">
+      <div class="board-card">
+        <div class="board-head">
+          <div class="board-caption"><span class="caption-icon" aria-hidden="true">✦</span><span>Bàn gỗ sồi 3D</span></div>
+          <div class="board-meta">15 × 15 · xoay tự do</div>
+          <div class="zoom-controls" role="group" aria-label="Điều khiển thu phóng">
+            <button class="zoom-btn" id="zoom-out" type="button" aria-label="Thu nhỏ bàn cờ" title="Thu nhỏ">−</button>
+            <span class="zoom-value" id="zoom-value" aria-live="polite">100%</span>
+            <button class="zoom-btn" id="zoom-in" type="button" aria-label="Phóng to bàn cờ" title="Phóng to">+</button>
+            <button class="zoom-btn" id="zoom-reset" type="button" aria-label="Đặt lại góc nhìn" title="Đặt lại góc nhìn">↺</button>
+          </div>
+        </div>
+        <div class="stage-wrap" id="stage" aria-label="Bàn cờ 3D tương tác">
+          <div class="stage-loading" id="stage-loading" role="status">Đang dựng bàn cờ 3D…</div>
+        </div>
+        <div class="board-foot">
+          <div class="foot-tip"><span class="tip-glyph" aria-hidden="true">i</span><span>Chạm giao điểm để đi · kéo để xoay · chụm để zoom</span></div>
+          <span id="move-count">00 nước</span>
+        </div>
+      </div>
+
+      <aside class="side">
+        <section class="panel" aria-live="polite">
+          <h2 class="panel-title">Trạng thái trận</h2>
+          <div class="turn-card">
+            <div id="turn-stone" class="turn-stone" aria-hidden="true"></div>
+            <div><div class="turn-label" id="turn-label">ĐẾN LƯỢT</div><div class="turn-name" id="turn-name">Quân đen</div><div class="turn-sub" id="turn-sub">Người chơi 1</div></div>
+          </div>
+          <div class="players">
+            <div class="player active" id="player-black">
+              <div class="player-top"><span class="mini-stone" aria-hidden="true"></span> ĐEN</div>
+              <div class="player-name" id="black-name">Người chơi 1</div>
+              <div class="player-score"><span id="black-score">0</span> trận thắng</div>
+            </div>
+            <div class="player" id="player-white">
+              <div class="player-top"><span class="mini-stone white" aria-hidden="true"></span> TRẮNG</div>
+              <div class="player-name" id="white-name">Người chơi 2</div>
+              <div class="player-score"><span id="white-score">0</span> trận thắng</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">Chế độ chơi</h2>
+          <div class="mode-select" role="group" aria-label="Chọn chế độ">
+            <button class="mode-btn active" id="mode-local" type="button" aria-pressed="true">2 người</button>
+            <button class="mode-btn" id="mode-cpu" type="button" aria-pressed="false">Đấu máy</button>
+            <button class="mode-btn" id="mode-bots" type="button" aria-pressed="false">AI vs AI</button>
+          </div>
+          <div class="first-choice" id="first-choice" role="group" aria-label="Chọn bên đi trước" hidden>
+            <button class="choice-btn" id="first-human" type="button" aria-pressed="true">Bạn đi trước</button>
+            <button class="choice-btn" id="first-ai" type="button" aria-pressed="false">AI đi trước</button>
+          </div>
+          <div class="actions">
+            <button class="action-btn" id="undo-btn" type="button" disabled><span class="icon" aria-hidden="true">↶</span>Hoàn tác</button>
+            <button class="action-btn" id="reset-btn" type="button"><span class="icon" aria-hidden="true">⟳</span>Chơi lại</button>
+            <button class="action-btn" id="pause-btn" type="button" hidden>Tạm dừng AI</button>
+            <button class="action-btn primary" id="new-btn" type="button"><span class="icon" aria-hidden="true">＋</span>Ván mới</button>
+          </div>
+        </section>
+
+        <section class="panel" aria-label="Trạng thái engine Rapfi">
+          <h2 class="panel-title">Engine · Rapfi</h2>
+          <div class="engine-card">
+            <div class="engine-status" id="engine-status" role="status">Rapfi WASM · Chưa tải</div>
+            <div class="engine-detail" id="engine-detail">Weights phát hành chính thức · chạy ngay trên thiết bị</div>
+            <label class="timeout-control" for="timeout-turn"><span>Thời gian/nước (ms)</span><input id="timeout-turn" type="number" min="100" max="60000" step="100" value="1000" inputmode="numeric" aria-describedby="timeout-hint"></label>
+            <p class="timeout-hint" id="timeout-hint">INFO TIMEOUT_TURN · 100–60.000 ms<br>Áp dụng từ nước kế tiếp.</p>
+            <button class="engine-retry" id="engine-retry" type="button" hidden>Tải lại engine</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">Nước đi gần đây</h2>
+          <div class="history-list" id="history"><div class="history-empty">Chưa có nước đi nào.</div></div>
+        </section>
+
+        <section class="panel">
+          <div class="rule"><span class="rule-mark" aria-hidden="true">5</span><span><strong>Luật chơi</strong><br>Hai bên lần lượt đặt quân. Ai tạo được 5 quân liền nhau theo hàng ngang, dọc hoặc chéo sẽ thắng.</span></div>
+        </section>
+      </aside>
+    </section>
+    <footer class="footer">Một bàn cờ nhỏ, một trận đấu lớn. · <a href="./rapfi-source.html" style="color:#b9a782;text-decoration:none">Rapfi · mã nguồn &amp; GPLv3</a></footer>
+  </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js" crossorigin="anonymous"></script>
+  <script src="./rapfi-client.js" defer></script>
+  <script src="./game.js" defer></script>
+</body>
+</html>

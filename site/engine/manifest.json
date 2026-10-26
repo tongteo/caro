@@ -1,0 +1,36 @@
+{
+  "release": "250615",
+  "sourceCommit": "1be1551ced57e38d53ed58f6d74bf6f8b4bdc230",
+  "data": {
+    "size": 10054084,
+    "sha256": "35287685337a5940da355dd4c55652d91a464014564cb256ec1f2b82dfad823f",
+    "chunks": [
+      {
+        "file": "weights-01.bin",
+        "size": 4194304
+      },
+      {
+        "file": "weights-02.bin",
+        "size": 4194304
+      },
+      {
+        "file": "weights-03.bin",
+        "size": 1665476
+      }
+    ]
+  },
+  "variants": {
+    "simd": {
+      "script": "rapfi-single-simd128.js",
+      "wasm": "rapfi-single-simd128.wasm"
+    },
+    "scalar": {
+      "script": "rapfi-single.js",
+      "wasm": "rapfi-single.wasm"
+    }
+  },
+  "weights": {
+    "name": "mix9svqfreestyle_bsmix.bin.lz4",
+    "sha256": "6bc0d1b0ff8e1d857f7f412923cd458f38f1a435087c91ae71fec3676c23ef62"
+  }
+}

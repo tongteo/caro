@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111820">
+  <link rel="icon" href="data:,">
+  <title>Rapfi WASM — Mã nguồn & giấy phép</title>
+  <style>
+    :root { color-scheme:dark; font-family:ui-sans-serif,system-ui,-apple-system,sans-serif; background:#111820; color:#eee9df; }
+    body { margin:0; padding:28px 20px 48px; line-height:1.65; }
+    main { max-width:750px; margin:auto; }
+    a { color:#e9bd76; text-underline-offset:3px; }
+    h1 { font-size:clamp(28px,6vw,40px); line-height:1.15; margin:26px 0 14px; }
+    h2 { font-size:19px; margin:28px 0 8px; }
+    p { color:#b8c2ca; margin:8px 0 14px; }
+    code { overflow-wrap:anywhere; font-size:.9em; color:#c9e6d9; }
+    .card { padding:18px 20px; border:1px solid #ffffff15; border-radius:14px; background:#1b242d; margin-top:20px; }
+    .small { font-size:13px; }
+    ul { padding-left:21px; color:#b8c2ca; }
+  </style>
+</head>
+<body><main>
+  <a href="./">← Trở lại bàn cờ</a>
+  <h1>Rapfi WASM<br>Mã nguồn & giấy phép</h1>
+  <p>Caro Arena dùng engine Rapfi thật, biên dịch sang WebAssembly và chạy trong Web Worker trên thiết bị của bạn. Không gửi thế cờ đến máy chủ để tính nước đi.</p>
+  <div class="card">
+    <strong>Engine và weights đang dùng</strong>
+    <p class="small">Rapfi phát hành <a href="https://github.com/dotb1ue/rapfi/releases/tag/250615" target="_blank" rel="noopener">250615</a>, NNUE <code>mix9svqfreestyle_bsmix.bin.lz4</code> cùng model cổ điển đi kèm trong gói phát hành chính thức. Bàn 15 × 15 dùng luật Freestyle (5 quân trở lên), tương ứng <code>INFO RULE 0</code>.</p>
+    <p class="small">Có bản SIMD và bản WASM tương thích không SIMD. Worker kiểm tra toàn vẹn gói dữ liệu, nạp rõ ràng cấu hình NNUE và chỉ báo sẵn sàng khi Rapfi xác nhận nạp weights; không âm thầm thay bằng AI heuristic.</p>
+  </div>
+  <h2>Nguồn tương ứng với bản WASM</h2>
+  <p><a href="./source/rapfi-250615-wasm-corresponding-source.tar.gz" download>Tải toàn bộ mã nguồn tương ứng và hướng dẫn build</a>. Gói này gồm mã engine đã chỉnh cho toolchain, các thư viện phụ thuộc, cấu hình và script lấy đúng weights phát hành theo SHA-256.</p>
+  <ul>
+    <li><a href="./source/BUILD.md">Chi tiết bản dựng và kiểm chứng NNUE</a></li>
+    <li><a href="./source/build-wasm.sh" download>Script build WASM</a> · <a href="./source/test-node.js" download>Kiểm tra giao thức và NNUE</a></li>
+    <li><a href="https://github.com/dotb1ue/rapfi/tree/1be1551ced57e38d53ed58f6d74bf6f8b4bdc230" target="_blank" rel="noopener">Mã nguồn gốc tại đúng commit</a></li>
+    <li><a href="./source/AUTHORS.txt">Các tác giả Rapfi</a></li>
+  </ul>
+  <h2>Giấy phép</h2>
+  <p>Rapfi được phân phối theo <a href="./source/GPL-3.0.txt">GNU GPL phiên bản 3 hoặc mới hơn</a>, không có bảo đảm. Các weights chính thức được phát hành theo <a href="./source/WEIGHTS-CC0.txt">CC0</a>.</p>
+  <h2>Thời gian và hiệu ứng suy nghĩ</h2>
+  <p>Giá trị thời gian mỗi nước được gửi trực tiếp bằng <code>INFO TIMEOUT_TURN</code> (mili giây), áp dụng từ lần tính tiếp theo. Vòng sáng trên bàn nhấp nháy khi engine tính; vị trí được cập nhật từ ứng viên tốt nhất mà Rapfi báo thời gian thực.</p>
+</main></body>
+</html>
